@@ -1,0 +1,87 @@
+body {
+  background-color: #f8f9fa; /* 藍色背景 */
+  color: black;
+}
+
+body.home-page {
+  background-color: lightskyblue;
+  color: white;
+}
+
+h3 {
+  font-weight: bold;
+}
+
+.jumbotron-blue {
+  background-color: lightskyblue; /* 藍色背景 */
+  color: white;
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
+}
+
+.navbar {
+  background-color: #f8f9fa;
+}
+
+.nav-link {
+  color: gray !important;
+  font-weight: bold;
+}
+
+.search-bar input {
+  height: 50px;
+  font-size: 18px;
+  flex: 4 1 0;
+  min-width: 0;
+}
+
+.search-bar select {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 150px;
+}
+
+.btn {
+  background-color: #3498db !important;
+  border-color: #3498db !important;
+  color: white !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* 平滑過渡 */
+}
+
+.btn:hover {
+  background-color: #1abc9c !important; 
+  border-color: #1abc9c !important;
+  color: white !important;
+}
+
+.btn:active {
+  background-color: #217dbb !important; /* 深一點的藍色 */
+  border-color: #217dbb !important;
+  color: white !important;  
+}
+
+.d-flex.justify-content-center.align-items-center {
+  min-height: 80vh;
+}
+
+.card {
+  margin-bottom: 20px;
+}
+
+.card-body p {
+    margin: 0.2rem 0;
+}
+
+.card-body h5 {
+    margin-bottom: 0.8rem; 
+}
+
+.card-body .abstract {
+    margin-top: 0.8rem;
+}
+
+.highlight {
+  background-color: aqua;
+  font-weight: bold;
+}

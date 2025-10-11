@@ -1,0 +1,61 @@
+{% extends "search_engine/base.html" %}
+{% block body_class %}{% endblock %}
+{% load static %}
+{% load highlight_filter %}
+{% block content %}
+<!-- Jumbotron 搜尋列 -->
+<div class="jumbotron-blue py-5 text-center">
+    <h1 class="fw-bold mb-4 text-center">Search PubMed Articles</h1>
+    <form method="get" action="{% url 'search_results' %}" class="search-bar mb-4">
+        <div class="input-group w-75 mx-auto">
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search again">
+        <select name="year" class="form-select">
+            <option value="">All Years</option>
+            {% for y in years %}
+            <option value="{{ y }}" {% if year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+        <select name="journal" class="form-select">
+            <option value="">All Journals</option>
+            {% for j in journals %}
+                <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- 搜尋結果 -->
+<div class="container py-4">
+  <h3 class="mb-4">Search Results</h3>
+  <div class="row">
+    {% for article in articles %}
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-body">
+            <h5 style="font-weight: bold;">{{ article.title|highlight:query|safe }}</h5>
+            <p><strong>Pmid:</strong> {{ article.pmid }}</p>
+            <p><strong>Year:</strong> {{ article.year }}</p>
+            <p><strong>Journal:</strong> {{ article.journal }}</p>
+            <p class="abstract">{{ article.abstract|highlight:query|safe }}</p>          
+            </div>
+            <div class="card-footer">
+                <ul>
+                    <li>Characters (with spaces): {{ article.stats.characters_including_spaces }}</li>
+                    <li>Characters (no spaces): {{ article.stats.characters_excluding_spaces }}</li>
+                    <li>Words: {{ article.stats.words }}</li>
+                    <li>Sentences: {{ article.stats.sentences }}</li>
+                    <li>Non-ASCII chars: {{ article.stats.non_ascii_characters }}</li>
+                    <li>Non-ASCII words: {{ article.stats.non_ascii_words }}</li>
+                    <li>Keyword counts: {{ article.stats.keyword_counts }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No results found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

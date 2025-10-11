@@ -1,0 +1,39 @@
+# ---- Python ----
+__pycache__/
+
+
+# ---- Django ----
+*.log
+db.sqlite3
+media/
+uploads/
+tmp/
+staticfiles/
+*.sqlite3
+BIR_project/settings.py
+search_engine/migrations/
+
+# ---- Virtual environment ----
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ---- IDE / Editor ----
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---- OS generated files ----
+ehthumbs.db
+Desktop.ini
+
+# ---- Python packaging ----
+build/
+dist/
+*.egg-info/

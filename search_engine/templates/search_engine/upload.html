@@ -1,0 +1,35 @@
+{% extends "search_engine/base.html" %}
+{% block body_class %}{% endblock %}
+{% block content %}
+<!-- Jumbotron -->
+<div class="jumbotron-blue text-center py-5">
+  <h1 class="fw-bold mb-4">Upload XML Files</h1>
+  <form method="post" enctype="multipart/form-data" class="mb-4">
+    {% csrf_token %}
+    <div class="input-group mb-3" style="max-width: 600px; margin: auto;">
+      <input type="file" name="xml_file" class="form-control" id="customFile">
+      <button type="submit" class="btn btn-light"><i class="bi bi-upload"></i></button>
+    </div>
+  </form>
+</div>
+
+<!-- 已上傳檔案列表 -->
+<div class="container py-4">
+  <h3 class="mb-4">Uploaded Files</h3>
+  <div class="row">
+    {% for file in files %}
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <span class="text-dark">{{ file.file_name }}</span>
+          <form method="post" action="{% url 'delete_file' file.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm"><i class="bi bi-trash3-fill"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
