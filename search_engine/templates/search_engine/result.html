@@ -21,6 +21,12 @@
                 <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
             {% endfor %}
         </select>
+
+        <!-- <select name="use_stemmer" class="form-select">
+            <option value="off" {% if highlight_context.use_stemmer == "off" %}selected{% endif %}>Normal Search</option>
+            <option value="on" {% if highlight_context.use_stemmer == "on" %}selected{% endif %}>Stemmer Mode</option>
+        </select> -->
+
         <button type="submit" class="btn"><i class="bi bi-search"></i></button>
         </div>
     </form>
@@ -30,15 +36,20 @@
 <div class="container py-4">
   <h3 class="mb-4">Search Results</h3>
   <div class="row">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
     {% for article in articles %}
     <div class="col-12 mb-3">
         <div class="card">
             <div class="card-body">
-            <h5 style="font-weight: bold;">{{ article.title|highlight:query|safe }}</h5>
+            <h5 style="font-weight: bold;">{{ article.title|highlight_stem:stemmed_list|highlight:highlight_context|safe }}</h5>
             <p><strong>Pmid:</strong> {{ article.pmid }}</p>
             <p><strong>Year:</strong> {{ article.year }}</p>
             <p><strong>Journal:</strong> {{ article.journal }}</p>
-            <p class="abstract">{{ article.abstract|highlight:query|safe }}</p>          
+            <p class="abstract">{{ article.abstract|highlight_stem:stemmed_list|highlight:highlight_context|safe }}</p>          
             </div>
             <div class="card-footer">
                 <ul>
@@ -58,4 +69,11 @@
     {% endfor %}
   </div>
 </div>
+
+<div class="d-flex justify-content-center mb-4"> 
+    <button id="backToTopBtn" type="button" class="btn btn-primary rounded-circle shadow-lg">
+    <i class="bi bi-arrow-up"></i>
+    </button>
+</div>
+<script src="{% static 'search_engine/js/back_to_top.js' %}"></script>
 {% endblock %}

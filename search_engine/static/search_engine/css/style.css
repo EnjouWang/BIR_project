@@ -85,3 +85,19 @@ h3 {
   background-color: aqua;
   font-weight: bold;
 }
+.highlight-stem {
+    background-color: #ffb6c1 !important; 
+}
+
+#backToTopBtn {
+  display: none; /* 預設隱藏 */
+  position: fixed;
+  bottom: 100px;
+  right: 40px;
+  z-index: 1050; /* 高於 Bootstrap 的大多數元素 */
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}

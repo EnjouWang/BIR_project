@@ -1,5 +1,6 @@
 {% extends "search_engine/base.html" %}
 {% block body_class %}{% endblock %}
+{% load static %}
 {% block content %}
 <!-- Jumbotron -->
 <div class="jumbotron-blue text-center py-5">
@@ -7,7 +8,7 @@
   <form method="post" enctype="multipart/form-data" class="mb-4">
     {% csrf_token %}
     <div class="input-group mb-3" style="max-width: 600px; margin: auto;">
-      <input type="file" name="xml_file" class="form-control" id="customFile">
+      <input type="file" name="xml_file" class="form-control" id="customFile" multiple>
       <button type="submit" class="btn btn-light"><i class="bi bi-upload"></i></button>
     </div>
   </form>
@@ -32,4 +33,11 @@
     {% endfor %}
   </div>
 </div>
+
+<div class="d-flex justify-content-center mb-4"> 
+    <button id="backToTopBtn" type="button" class="btn btn-primary rounded-circle shadow-lg">
+    <i class="bi bi-arrow-up"></i>
+    </button>
+</div>
+<script src="{% static 'search_engine/js/back_to_top.js' %}"></script>
 {% endblock %}

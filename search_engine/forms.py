@@ -1,10 +1,7 @@
 from django import forms
 
 class UploadXMLForm(forms.Form):
-    xml_file = forms.FileField(
-        label="Choose XML file",
-        help_text="Upload PubMed XML (.xml) flie."
-    )
+    xml_file = forms.FileField(required=False)
 
     def clean_xml_file(self):
         file = self.cleaned_data.get("xml_file")

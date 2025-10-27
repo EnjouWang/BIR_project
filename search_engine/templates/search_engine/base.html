@@ -12,14 +12,15 @@
 <body class="{% block body_class %}{% endblock %}">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg px-4">
-    <a class="navbar-brand fw-bold" href="{% url 'home' %}">PubMed Information Retrieval</a>
-    <div class="ms-auto">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">PubMed Information Retrieval</a>  
+    <div class="ms-auto d-flex">  
+      <a href="{% url 'zipf_analysis' %}" class="nav-link me-5">Zipf</a>
       <a href="{% url 'upload_xml' %}" class="nav-link me-2">Upload</a>
     </div>
   </nav>
 
   <!-- 主體內容 -->
-  <div class="container-fluid py-5">
+  <div class="container-fluid">
     {% block content %}{% endblock %}
   </div>
 

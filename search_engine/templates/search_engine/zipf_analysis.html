@@ -1,0 +1,35 @@
+{% extends 'search_engine/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="jumbotron-blue text-center py-5">
+    <h1 class="fw-bold mb-4">Zipf Distribution Analysis</h1>
+
+    {% if error_message %}
+    <div class="alert alert-warning text-center">{{ error_message }}</div>
+    {% else %}
+    <div class="text-center mb-3">
+    <label for="viewMode" class="form-label me-2 fw-bold">Mode : </label>
+    <select id="viewMode" class="form-select d-inline-block w-auto">
+        <option value="freq">Frequency</option>
+        <option value="norm">Normalized Frequency</option>
+    </select>
+    </div>
+</div>
+    <div class="container mt-5">
+        <div id="zipfPlot" style="height: 500px;"></div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Plotly -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!-- 導入外部 JS -->
+<script>
+  const rawData = {{ raw_data | safe }};
+  const stemData = {{ stem_data | safe }};
+</script>
+<script src="{% static 'search_engine/js/zipf_plot.js' %}"></script>
+
+{% endblock %}

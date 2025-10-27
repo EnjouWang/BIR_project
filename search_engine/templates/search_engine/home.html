@@ -24,6 +24,10 @@
                     <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
                 {% endfor %}
             </select>
+            <!-- <select name="use_stemmer" class="form-select">
+              <option value="off" {% if highlight_context.use_stemmer == "off" %}selected{% endif %}>Normal Search</option>
+              <option value="on" {% if highlight_context.use_stemmer == "on" %}selected{% endif %}>Stemmer Mode</option>
+          </select> -->
           <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
         </div>
       </form>
