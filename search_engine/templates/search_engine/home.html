@@ -7,27 +7,32 @@
     <img src="{% static 'search_engine/img/logo.png' %}" alt="Logo" style="max-width: 600px; width:100%; height:auto;">
   </div>
   <div class="d-flex justify-content-center align-items-center" style="min-height: 60vh; margin-top:-300px;">
-    <div class="w-100" style="max-width: 700px;">
+    <div class="w-100" style="max-width: 900px;">
       <h1 class="fw-bold mb-4 text-center">Search PubMed Articles</h1>
       <form method="get" action="{% url 'search_results' %}" class="search-bar">
         <div class="input-group mb-3">
-            <input type="text" name="q" class="form-control" placeholder="What are you looking for?">
-            <select name="year" class="form-select">
-                <option value="">All Years</option>
-                {% for y in years %}
-                <option value="{{ y }}" {% if year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
-                {% endfor %}
-            </select>
-            <select name="journal" class="form-select">
-                <option value="">All Journals</option>
-                {% for j in journals %}
-                    <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
-                {% endfor %}
-            </select>
-            <!-- <select name="use_stemmer" class="form-select">
-              <option value="off" {% if highlight_context.use_stemmer == "off" %}selected{% endif %}>Normal Search</option>
-              <option value="on" {% if highlight_context.use_stemmer == "on" %}selected{% endif %}>Stemmer Mode</option>
-          </select> -->
+          <input type="text" name="q" class="form-control" placeholder="What are you looking for?">
+          <select name="year" class="form-select">
+              <option value="">All Years</option>
+              {% for y in years %}
+              <option value="{{ y }}" {% if year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+              {% endfor %}
+          </select>
+          <select name="journal" class="form-select">
+              <option value="">All Journals</option>
+              {% for j in journals %}
+                  <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
+              {% endfor %}
+          </select>
+          <!-- <select name="use_stemmer" class="form-select">
+            <option value="off" {% if highlight_context.use_stemmer == "off" %}selected{% endif %}>Normal Search</option>
+            <option value="on" {% if highlight_context.use_stemmer == "on" %}selected{% endif %}>Stemmer Mode</option>
+        </select> -->
+          <select name="semantic" class="form-select">
+            <option value="none" {% if request.GET.semantic == 'none' or not request.GET.semantic %}selected{% endif %}>Normal</option>
+            <option value="cbow" {% if request.GET.semantic == 'cbow' %}selected{% endif %}>Semantic (CBOW)</option>
+            <option value="sg" {% if request.GET.semantic == 'sg' %}selected{% endif %}>Semantic (Skip-Gram)</option>
+          </select>
           <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
         </div>
       </form>

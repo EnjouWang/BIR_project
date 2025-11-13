@@ -14,6 +14,7 @@
   <nav class="navbar navbar-expand-lg px-4">
     <a class="navbar-brand fw-bold" href="{% url 'home' %}">PubMed Information Retrieval</a>  
     <div class="ms-auto d-flex">  
+      <a href="{% url 'word2vec_analysis' %}" class="nav-link me-5">Word2Vec</a>
       <a href="{% url 'zipf_analysis' %}" class="nav-link me-5">Zipf</a>
       <a href="{% url 'upload_xml' %}" class="nav-link me-2">Upload</a>
     </div>

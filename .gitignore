@@ -23,7 +23,8 @@ venv.bak/
 
 # ---- IDE / Editor ----
 .idea/
-.vscode/
+# .vscode/ - keep workspace settings in version control
+.cursor/
 *.swp
 *.swo
 .DS_Store

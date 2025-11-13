@@ -8,26 +8,32 @@
     <h1 class="fw-bold mb-4 text-center">Search PubMed Articles</h1>
     <form method="get" action="{% url 'search_results' %}" class="search-bar mb-4">
         <div class="input-group w-75 mx-auto">
-        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search again">
-        <select name="year" class="form-select">
-            <option value="">All Years</option>
-            {% for y in years %}
-            <option value="{{ y }}" {% if year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
-            {% endfor %}
-        </select>
-        <select name="journal" class="form-select">
-            <option value="">All Journals</option>
-            {% for j in journals %}
-                <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
-            {% endfor %}
-        </select>
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search again">
+            <select name="year" class="form-select">
+                <option value="">All Years</option>
+                {% for y in years %}
+                <option value="{{ y }}" {% if year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+            <select name="journal" class="form-select">
+                <option value="">All Journals</option>
+                {% for j in journals %}
+                    <option value="{{ j }}" {% if journal == j %}selected{% endif %}>{{ j }}</option>
+                {% endfor %}
+            </select>
 
-        <!-- <select name="use_stemmer" class="form-select">
-            <option value="off" {% if highlight_context.use_stemmer == "off" %}selected{% endif %}>Normal Search</option>
-            <option value="on" {% if highlight_context.use_stemmer == "on" %}selected{% endif %}>Stemmer Mode</option>
-        </select> -->
+            <!-- <select name="use_stemmer" class="form-select">
+                <option value="off" {% if highlight_context.use_stemmer == "off" %}selected{% endif %}>Normal Search</option>
+                <option value="on" {% if highlight_context.use_stemmer == "on" %}selected{% endif %}>Stemmer Mode</option>
+            </select> -->
 
-        <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+            <select name="semantic" class="form-select">
+                <option value="none" {% if request.GET.semantic == 'none' or not request.GET.semantic %}selected{% endif %}>Normal</option>
+                <option value="cbow" {% if request.GET.semantic == 'cbow' %}selected{% endif %}>Semantic (CBOW)</option>
+                <option value="sg" {% if request.GET.semantic == 'sg' %}selected{% endif %}>Semantic (Skip-Gram)</option>
+            </select>
+
+            <button type="submit" class="btn"><i class="bi bi-search"></i></button>
         </div>
     </form>
 </div>
@@ -38,7 +44,10 @@
   <div class="row">
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-danger">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
     {% endif %}
     {% for article in articles %}
@@ -46,20 +55,20 @@
         <div class="card">
             <div class="card-body">
             <h5 style="font-weight: bold;">{{ article.title|highlight_stem:stemmed_list|highlight:highlight_context|safe }}</h5>
-            <p><strong>Pmid:</strong> {{ article.pmid }}</p>
-            <p><strong>Year:</strong> {{ article.year }}</p>
-            <p><strong>Journal:</strong> {{ article.journal }}</p>
+            <p><strong>Pmid :</strong> {{ article.pmid }}</p>
+            <p><strong>Year :</strong> {{ article.year }}</p>
+            <p><strong>Journal :</strong> {{ article.journal }}</p>
             <p class="abstract">{{ article.abstract|highlight_stem:stemmed_list|highlight:highlight_context|safe }}</p>          
             </div>
-            <div class="card-footer">
-                <ul>
-                    <li>Characters (with spaces): {{ article.stats.characters_including_spaces }}</li>
-                    <li>Characters (no spaces): {{ article.stats.characters_excluding_spaces }}</li>
-                    <li>Words: {{ article.stats.words }}</li>
-                    <li>Sentences: {{ article.stats.sentences }}</li>
-                    <li>Non-ASCII chars: {{ article.stats.non_ascii_characters }}</li>
-                    <li>Non-ASCII words: {{ article.stats.non_ascii_words }}</li>
-                    <li>Keyword counts: {{ article.stats.keyword_counts }}</li>
+            <div class="card-footer small">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">Characters (with spaces): {{ article.stats.characters_including_spaces }}</li>
+                    <li class="list-inline-item">Characters (no spaces): {{ article.stats.characters_excluding_spaces }}</li>
+                    <li class="list-inline-item">Words: {{ article.stats.words }}</li>
+                    <li class="list-inline-item">Sentences: {{ article.stats.sentences }}</li>
+                    <li class="list-inline-item">Non-ASCII chars: {{ article.stats.non_ascii_characters }}</li>
+                    <li class="list-inline-item">Non-ASCII words: {{ article.stats.non_ascii_words }}</li>
+                    <li class="list-inline-item">Keyword counts: {{ article.stats.keyword_counts }}</li>
                 </ul>
             </div>
         </div>

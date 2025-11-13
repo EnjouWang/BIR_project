@@ -47,3 +47,8 @@ def parse_pubmed_xml(xml_content, uploaded_file):
 
         except Exception as e:
             print(f"Failed to parse: {e}")
+
+def clean_empty_abstracts():
+    null_deleted, _ = Article.objects.filter(abstract__isnull=True).delete()
+    empty_deleted, _ = Article.objects.filter(abstract='').delete()
+    print(f"清理完成：刪除 {null_deleted + empty_deleted} 筆沒有摘要的資料。")

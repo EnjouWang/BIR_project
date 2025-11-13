@@ -26,7 +26,10 @@ class Article(models.Model):
     authors = models.TextField(null=True, blank=True)   # "LastName, FirstName; LastName, FirstName"
     journal = models.CharField(max_length=255, null=True, blank=True)
     year = models.IntegerField(null=True, blank=True)
-    # created_at = models.DateTimeField(auto_now_add=True)
+    
+    # 語意向量欄位
+    vector_cbow = models.JSONField(null=True, blank=True)
+    vector_sg = models.JSONField(null=True, blank=True)
 
     # 方便搜尋：回傳前幾個字作為顯示
     def __str__(self):

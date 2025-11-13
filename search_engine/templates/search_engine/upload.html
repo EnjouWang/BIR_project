@@ -12,6 +12,21 @@
       <button type="submit" class="btn btn-light"><i class="bi bi-upload"></i></button>
     </div>
   </form>
+
+  <button id="trainModelBtn" class="btn btn-success">
+    <i class="bi bi-cpu"></i> Train Word2Vec Model
+  </button>
+
+  <div id="trainProgressContainer" class="justify-content-center mt-4" style="width: 75%;">    
+    <div id="trainProgress" class="progress" style="display: none; position: relative;">
+      <div id="trainProgressBar"
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          role="progressbar"
+          style="width: 0%;">
+      </div>
+      <span id="progressText" class="progress-text">Training...</span>
+    </div>
+  </div>
 </div>
 
 <!-- 已上傳檔案列表 -->
@@ -40,4 +55,5 @@
     </button>
 </div>
 <script src="{% static 'search_engine/js/back_to_top.js' %}"></script>
+<script src="{% static 'search_engine/js/train_progress.js' %}"></script>
 {% endblock %}

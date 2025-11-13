@@ -69,17 +69,20 @@ h3 {
   margin-bottom: 20px;
 }
 
-.card-body p {
-    margin: 0.2rem 0;
-}
-
 .card-body h5 {
     margin-bottom: 0.8rem; 
 }
 
-.card-body .abstract {
-    margin-top: 0.8rem;
+.card-body p {
+    margin: 0.2rem 0;
+    color: rgb(76, 76, 76);
 }
+
+.card-body .abstract {
+    margin-top: 1rem;
+    font-family: "Times New Roman", Times, serif !important;
+    color: #000;
+} 
 
 .highlight {
   background-color: aqua;
@@ -100,4 +103,48 @@ h3 {
   font-size: 20px;
   border-radius: 50%;
   transition: all 0.3s ease;
+}
+
+#trainProgressContainer {
+  width: 75%;            /* 寬度為畫面的 75% */
+  margin-top: 1.5rem;    /* 與上方元素的間距 (rem 是相對單位，比 px 更有彈性) */
+  margin-left: auto;     /* 搭配 margin-right: auto; 實現水平置中 */
+  margin-right: auto;
+}
+
+#trainProgress {
+  /* justify-content: center; */
+  height: 25px; /* 稍微加高一點讓文字更舒適 */
+  width: 100%;
+  background-color: #e9ecef;
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative; /* 確保這個是子元素絕對定位的基準 */
+}
+
+/* #trainProgressBar 的樣式不變 */
+#trainProgressBar {
+  background-color: #3498db !important;
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.4s ease-in-out;
+  width: 0%;
+}
+
+/* 新增：文字專用的樣式 */
+.progress-text {
+  position: absolute; /* 絕對定位，脫離文檔流 */
+  top: 0;
+  left: 0;
+  width: 100%; /* 寬度和父容器一樣 */
+  height: 100%; /* 高度和父容器一樣 */
+  
+  /* 以下是讓文字在容器內完美置中的關鍵 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  color: #333; /* 預設文字顏色，可以自行調整 */
+  font-weight: bold;
+  z-index: 10; /* 確保文字在進度條上方 */
 }
