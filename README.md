@@ -1,4 +1,4 @@
-## Biomedical Information Retrieval Project #2
+## Biomedical Information Retrieval Project #3
 ### 一、系統概要
 本系統在前幾次作業的基礎下，載入PubMed上與癌症相關約2500筆的文章，對其使用Word Embedding (word2vec) 技術，使使用者能以語意理解的方式，獲取重要資訊。
 ### 二、Word2Vec 模型訓練與分析 
