@@ -10,8 +10,9 @@ from .utils.text_stat import compute_text_stat
 from .utils.zipf_analysis import clean_text, get_word_frequencies, compute_zipf_distribution
 from .utils.edit_distance import find_similar_words
 from .utils.train_word2vec import train_dual_word2vec, update_article_vectors_dual
+from .utils.tfidf import sentences_tfidf
 from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -333,3 +334,141 @@ def word2vec_analysis(request):
         "word2vec_data": json.dumps(word2vec_data),
     }
     return render(request, "search_engine/word2vec.html", context)
+
+
+def tfidf_search(request):
+    articles = Article.objects.all()
+    closest_word = ''
+    query = request.GET.get("q", "").strip()
+    if not query:
+        return render(request, "search_engine/tfidf_search.html", {"articles": []})
+
+    # 完整詞搜尋
+    pattern = rf"\b{re.escape(query)}\b"
+    results = [
+        a for a in Article.objects.all() if (
+            (a.title and re.search(pattern, a.title, re.IGNORECASE)) or
+            (a.abstract and re.search(pattern, a.abstract, re.IGNORECASE))
+        )
+    ]
+
+    # edit distance 相似詞搜尋
+    if not results:
+        all_texts = list(Article.objects.values_list('title', flat=True)) + list(Article.objects.values_list('abstract', flat=True))
+        all_words = {w for text in all_texts if text for w in re.findall(r'\b\w+\b', text.lower())}
+        similar_candidates = find_similar_words(query, all_words, threshold=2)
+
+        if similar_candidates:
+            closest_word = similar_candidates[0][0]
+            results = articles.filter(title__icontains=closest_word) | articles.filter(abstract__icontains=closest_word)
+            messages.info(request, f"顯示與「{query}」相近的搜尋結果（最接近詞：{closest_word}）")
+
+    # 排序結果 by 關鍵字出現次數
+    results_with_count = []
+    for article in results:
+        combined_text = (article.title or '') + " " + (article.abstract or '')
+        keyword_count = len(re.findall(re.escape(query), combined_text, re.IGNORECASE))
+        article.keyword_count = keyword_count
+        results_with_count.append(article)
+
+    results = sorted(results_with_count, key=lambda x: x.keyword_count, reverse=True)
+
+    articles = results
+    messages.success(request, f"主題搜尋完成，共找到 {len(articles)} 筆相關結果。")
+
+    # 文字統計
+    actual_keyword = closest_word if 'closest_word' in locals() and closest_word else query
+    for article in articles:
+        stats = compute_text_stat(article.abstract or '', actual_keyword)
+
+        combined_text = (article.title or '') + " " + (article.abstract or '')
+        keyword_count = len(re.findall(re.escape(actual_keyword), combined_text, re.IGNORECASE))
+        
+        stats["keyword_counts"] = keyword_count # 覆蓋 stats["keyword_counts"]，其他項目維持摘要為主
+        article.stats = stats
+
+    request.session["tfidf_search_corpus"] = [a.abstract for a in articles if a.abstract]
+
+    # 結果頁
+    return render(request, "search_engine/tfidf_search.html", {
+        "articles": articles,
+        "query": query,
+        "closest_word": closest_word,
+        "highlight_context": {"query": query, "matched": closest_word},
+        
+    })
+
+def get_tfidf_sentences(request, article_id):
+    art = Article.objects.get(id=article_id)
+    # 文章語料庫：所有 article.abstract
+    corpus_all = list(Article.objects.values_list('abstract', flat=True))
+    
+    # 搜尋結果 corpus（在搜尋 view 中 articles 已選出，可存在 session）
+    corpus_search = request.session.get("tfidf_search_corpus", corpus_all)
+
+    sentences = sent_tokenize(art.abstract or "")
+
+    stats = compute_text_stat(art.abstract or "", "")
+    art.stats = stats
+
+    result_all = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_all,
+        sentences=sentences, k=5, exclude_current_in_df=True,
+        length_normalization="none", remove_stopwords=True
+    )
+
+    result_search = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_search,
+        sentences=sentences,  k=5, exclude_current_in_df=True,
+        length_normalization="none", remove_stopwords=True
+    )
+
+    result_all_stop = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_all,
+        sentences=sentences,  k=5, exclude_current_in_df=True,
+        length_normalization="none", remove_stopwords=False
+    )
+
+    result_search_stop = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_search,
+        sentences=sentences,  k=5, exclude_current_in_df=True,
+        length_normalization="none", remove_stopwords=False
+    )
+
+    result_all_norm_sqrt = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_all,
+        sentences=sentences, k=5, exclude_current_in_df=True,
+        length_normalization="sqrt", remove_stopwords=True
+    )
+
+    result_search_norm_sqrt = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_search,
+        sentences=sentences,  k=5, exclude_current_in_df=True,
+        length_normalization="sqrt", remove_stopwords=True
+    )
+
+    result_all_norm_log = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_all,
+        sentences=sentences, k=5, exclude_current_in_df=True,
+        length_normalization="log", remove_stopwords=True
+    )
+
+    result_search_norm_log = sentences_tfidf(
+        article=art.abstract, corpus_texts=corpus_search,
+        sentences=sentences,  k=5, exclude_current_in_df=True,
+        length_normalization="log", remove_stopwords=True
+    )
+
+    return JsonResponse({
+        "title": art.title,
+        "abstract": art.abstract,
+        "stats": art.stats,
+        "method_all": [{"sentence": s["sentence"], "score": s["score"]} for s in result_all],
+        "method_search": [{"sentence": s["sentence"], "score": s["score"]} for s in result_search],
+        "method_all_stop": [{"sentence": s["sentence"], "score": s["score"]} for s in result_all_stop],
+        "method_search_stop": [{"sentence": s["sentence"], "score": s["score"]} for s in result_search_stop],
+        "method_all_norm_sqrt": [{"sentence": s["sentence"], "score": s["score"]} for s in result_all_norm_sqrt],
+        "method_search_norm_sqrt": [{"sentence": s["sentence"], "score": s["score"]} for s in result_search_norm_sqrt],
+        "method_all_norm_log": [{"sentence": s["sentence"], "score": s["score"]} for s in result_all_norm_log],
+        "method_search_norm_log": [{"sentence": s["sentence"], "score": s["score"]} for s in result_search_norm_log],
+    })

@@ -1,16 +1,42 @@
-## Biomedical Information Retrieval Project #3
+## Biomedical Information Retrieval Project #4
 ### 一、系統概要
-本系統在前幾次作業的基礎下，載入PubMed上與癌症相關約2500筆的文章，對其使用Word Embedding (word2vec) 技術，使使用者能以語意理解的方式，獲取重要資訊。
-### 二、Word2Vec 模型訓練與分析 
-以系統上所有文章內容分別訓練兩個 Word2Vec 模型，將文字轉換為數值向量，並分析所有文章中出現頻率前5名的詞彙，在兩個模型的轉換下與該詞彙相似度最高的前十個詞彙為何，結果以 t-SNE 降維方式呈現在散佈圖上。
-1.	CBOW (Continuous Bag of Words)：由上下文推測中心詞，強調語境理解。
-2.	Skip-gram：由中心詞推測上下文，擅長捕捉罕見字詞的語意。
-#### 結果視覺化：
-顯示 CBOW 和 Skip-Gram 兩個模型轉換下的相似度散佈圖，統一座標軸尺度，可在滑鼠懸停時顯示對應的單字與相似度。以「patients」一詞為例，使用 CBOW 模型產生出 embedding 並計算相似度後，與之最相似的詞彙是「surgery」；而使用 Skip-Gram 產生出來的則是「chemoradiotherapy」。這樣的結果顯示兩種模型在語意捕捉上的差異，CBOW 模型在理解語境中常見且語意穩定的詞彙時表現較佳；而 Skip-Gram 模型更擅長捕捉語意關聯較遠、但具有潛在語意連結的詞彙。
-### 三、Word2Vec 語意搜尋功能
-系統將每篇文章的摘要依照兩個模型轉換成平均的向量（document embedding），在搜尋時可選擇使用 CBOW 或 Skip-Gram 模型進行語意搜尋，系統將使用者的查詢文字同樣依選擇的模型轉換為向量，並計算與各篇文章的餘弦相似度（cosine similarity），搜尋結果會依照相似度排序，CBOW 語意搜尋會顯示出相似度 > 0.9 的文章，Skip-Gram 語意搜尋則顯示出相似度 > 0.8 的文章。
-### 四、系統功能特色與擴充
-1.	Train Word2Vec Model 按鈕：在上傳檔案的頁面中新增重新訓練模型的按鈕，當系統的資料庫因為新增或刪除文件而有所變化，可以重新訓練兩個 Word2Vec 模型，並顯示訓練的進度條。
-2.	擴大上傳 XML 檔案數量上限：允許系統一次上傳大量檔案，並同時檢查資料完整性。若發現某篇文章的摘要欄位為空，系統將自動刪除該筆資料，以維持資料庫的品質。
-3.	完整詞搜尋優化：搜尋結果僅匹配完整詞彙而非其子字串。例如搜尋「cance」時，不會搜尋出「cancer」的子字串，而是根據模糊搜尋的結果搜尋出「chance」的相關文章。
-4.	搜尋結果畫面美化：簡潔化文字統計畫面，並更改文章字體。
+本次作業新增的功能主要是使用 TF IDF，針對整篇文章中的所有句子進行語意相關性排序，並提供多種不同的 TF IDF 計算公式以進行比較。此功能的目的是對一篇文章進行主題摘要。
+## 二、TF IDF 公式設計 
+本次作業中主要討論三個面向的設計：
+### Term Frequency（TF）：
+使用 Sublinear TF（log scaling），避免高詞頻詞彙的過度放大現象。
+$$
+TF_{sub}=1+log⁡(TF)
+$$
+### Inverse Document Frequency（IDF）：
+分別測試使用系統全部文章（約2500篇癌症主題文章）以及指使用特定主題文章（例如：乳癌）作為 DF 統計的範圍。
+### Sentence TF-IDF 分數計算：
+首先以句子當中詞的平均 TF IDF 分數作為該語句的TF IDF 分數。接著分別測試兩種長度正規化的方法對摘要結果的影響。
+- SQRT 正規化：$$score=\frac{TF-IDF}{\sqrt{length}}$$
+- LOG 正規化：$$score=\frac{TF-IDF}{\log{⁡(length)}+1}$$
+ 
+## 三、實際例子分析
+以乳癌（breast cancer）作為測試的子主題，對以下幾種方法進行分析：
+
+
+| 方法                        | 是否使用系統全部文章 | 是否移除Stopwords | 是否加入長度正規化 | 正規化形式 |
+| --------------------------- | -------------------- | ----------------- | ------------------ | ---------- |
+| All Corpus                  |✓|✓|✗|            |
+| All Corpus (Stopwords)      |✓|✗|✗|            |
+| All Corpus (Norm: SQRT)     |✓|✓|✓|$$\sqrt{len}$$|
+| All Corpus (Norm: LOG)      |✓|✓|✓|$$log⁡(len)+1$$|
+| Search Results              |✗|✓|✗|            |
+| Search Results (Stopwords)  |✗|✗|✗|            |
+| Search Results (Norm: SQRT) |✗|✓|✓|$$\sqrt{len}$$|
+|  Search Results (Norm: LOG) |✗|✓|✓|$$log⁡(len)+1$$|
+
+
+- All Corpus：長句優勢最大；易受高 TF 詞影響
+- All Corpus (Stopwords)：主題詞更突出；冗詞降低
+- All Corpus (Norm: SQRT)：長句影響降低，短句更容易上升
+- All Corpus (Norm: LOG)：正規化強度小於 SQRT；長句仍略占優
+- Search Results：僅看查詢詞；最像關鍵詞比對
+- Search Results (Stopwords)：更凸顯主題詞出現比例
+- Search Results (Norm: SQRT)：關鍵詞密度高的短句更容易上升
+- Search Results (Norm: LOG)：對長句懲罰較弱；結果介於 SQRT 與無正規化之間
+

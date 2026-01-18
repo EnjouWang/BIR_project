@@ -1,0 +1,290 @@
+.modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    padding: 1.5rem;
+}
+
+.modal-header .modal-title {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-body {
+    padding: 2rem;
+    background-color: #f8f9fa;
+}
+
+/* 標題區塊 */
+.article-title {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.article-title h4 {
+    color: #2d3748;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 摘要區塊 */
+.abstract-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #667eea;
+}
+
+.abstract-section .section-label {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.abstract-section p {
+    color: #4a5568;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* 統計資訊區塊 */
+.stats-section {
+    background: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.stats-section .section-label {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.stat-item {
+    background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.stat-label {
+    color: #718096;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    color: #667eea;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Top Sentences 區塊 */
+.sentences-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.sentences-section .section-label {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Method Tabs 樣式 - 使用更高優先級 */
+.sentences-section .method-tabs.nav.nav-pills {
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: flex-start;
+}
+
+.sentences-section .method-tabs.nav-pills .nav-item {
+    margin-bottom: 0;
+    flex: 0 0 auto;
+}
+
+/* 在第 5 個按鈕之前插入換行 */
+.sentences-section .method-tabs.nav-pills .nav-item:nth-child(4)::after {
+    content: '';
+    flex-basis: 100%;
+    height: 0;
+}
+
+.sentences-section .method-tabs.nav-pills .nav-item .nav-link {
+    color: #718096 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    background: white !important;
+    margin-right: 0 !important;
+    white-space: nowrap;
+}
+
+.sentences-section .method-tabs.nav-pills .nav-item .nav-link:hover {
+    background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%) !important;
+    border-color: #667eea !important;
+    color: #667eea !important;
+    transform: translateY(-2px);
+}
+
+.sentences-section .method-tabs.nav-pills .nav-item .nav-link.active,
+.sentences-section .method-tabs.nav-pills .nav-item .nav-link.active:hover,
+.sentences-section .method-tabs.nav-pills .nav-item .nav-link.active:focus {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+.sentences-section .method-tabs .nav-link i {
+    font-size: 1rem;
+}
+
+.sentences-section .tab-content {
+    margin-top: 1rem;
+}
+
+.sentence-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sentence-item {
+    background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+    padding: 1.25rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sentence-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.sentence-item::before {
+    content: attr(data-rank);
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.sentence-score {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.sentence-text {
+    color: #2d3748;
+    line-height: 1.7;
+    margin: 0;
+    padding-left: 1rem;
+}
+
+/* 圖示樣式 */
+.bi {
+    font-size: 1.1em;
+}
+
+/* 捲軸美化 */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}

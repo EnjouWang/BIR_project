@@ -11,4 +11,6 @@ urlpatterns = [
     path("zipf/", views.zipf_analysis, name="zipf_analysis"),
     path("train_model/", views.train_model, name="train_model"),
     path("word2vec/", views.word2vec_analysis, name="word2vec_analysis"),
+    path("tfidf/search/", views.tfidf_search, name="tfidf_search"),
+    path("tfidf/get_sentences/<int:article_id>/", views.get_tfidf_sentences, name="get_tfidf_sentences"),
 ]

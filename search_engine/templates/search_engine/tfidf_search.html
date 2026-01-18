@@ -1,0 +1,236 @@
+{% extends "search_engine/base.html" %}
+{% load static %}
+{% block content %}
+<link href="{% static 'search_engine/css/modal.css' %}" rel="stylesheet">
+
+<!-- 搜尋列 -->
+<div class="jumbotron-blue py-5 text-center">
+    <h1 class="fw-bold mb-4 text-center">Subject Search</h1>
+
+    <form method="get" action="{% url 'tfidf_search' %}" class="search-bar mb-4">
+        <div class="input-group w-75 mx-auto">
+            <input type="text" name="q" class="form-control"
+                   value="{{ query }}" placeholder="Search subtopic…">
+
+            <button type="submit" class="btn">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- 搜尋結果 -->
+<div class="container py-4">
+    <h3 class="mb-4">Search Results</h3>
+
+    <div class="row">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% for article in articles %}
+        <div class="col-12 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold">{{ article.title }}</h5>
+
+                    <p><strong>Pmid :</strong> {{ article.pmid }}</p>
+                    <p><strong>Year :</strong> {{ article.year }}</p>
+                    <p><strong>Journal :</strong> {{ article.journal }}</p>
+
+                    <p class="abstract">{{ article.abstract}}</p>
+                </div>
+
+                <!-- 文字統計 -->
+                <div class="card-footer small">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item">Characters (with spaces): {{ article.stats.characters_including_spaces }}</li>
+                        <li class="list-inline-item">Characters (no spaces): {{ article.stats.characters_excluding_spaces }}</li>
+                        <li class="list-inline-item">Words: {{ article.stats.words }}</li>
+                        <li class="list-inline-item">Sentences: {{ article.stats.sentences }}</li>
+                        <li class="list-inline-item">Non-ASCII chars: {{ article.stats.non_ascii_characters }}</li>
+                        <li class="list-inline-item">Non-ASCII words: {{ article.stats.non_ascii_words }}</li>
+                    </ul>
+                </div>
+
+                <div class="card-footer d-flex justify-content-end">
+                    <button class="btn btn-primary btn-sm"
+                        onclick="loadTFIDFSentences({{ article.id }})"
+                        data-bs-toggle="modal"
+                        data-bs-target="#tfidfModal">
+                        Summary (TF-IDF)
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No results found.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal：包含標題、摘要、統計資訊、句子排名 -->
+<div class="modal fade" id="tfidfModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">TF-IDF Summary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <h4 id="modalTitle" class="fw-bold"></h4>
+
+                <!-- 摘要區塊 -->
+                <div class="abstract-section">
+                    <div class="section-label">
+                        <i class="bi bi-file-text"></i>
+                        Abstract
+                    </div>
+                    <p id="modalAbstract"></p>
+                </div>
+
+                <!-- 統計資訊區塊 -->
+                <div class="stats-section">
+                    <div class="section-label">
+                        <i class="bi bi-bar-chart"></i>
+                        Statistics
+                    </div>
+                    <div id="modalStats"></div>
+                </div>
+
+                <div class="sentences-section">
+                    <div class="section-label">
+                        <i class="bi bi-star-fill"></i>
+                        Top Sentences by TF-IDF Score
+                    </div>
+
+                    <!-- Nav Tabs 切換不同方法 -->
+                    <ul class="nav nav-pills method-tabs mb-3" role="tablist">
+                        <!-- 第一行：All Corpus 方法 -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="method-all-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-all" type="button" role="tab">
+                                <i class="bi bi-collection"></i>
+                                All Corpus
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-all-stop-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-all-stop" type="button" role="tab">
+                                <i class="bi bi-collection-fill"></i>
+                                All Corpus (Stopwords)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-all-norm-sqrt-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-all-norm-sqrt" type="button" role="tab">
+                                <i class="bi bi-collection"></i>
+                                All Corpus (Norm: SQRT)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-all-norm-log-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-all-norm-log" type="button" role="tab">
+                                <i class="bi bi-collection"></i>
+                                All Corpus (Norm: LOG)
+                            </button>
+                        </li>
+                        
+                        <!-- 第二行：Search Results 方法 -->
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-search-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-search" type="button" role="tab">
+                                <i class="bi bi-search"></i>
+                                Search Results
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-search-stop-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-search-stop" type="button" role="tab">
+                                <i class="bi bi-search-heart"></i>
+                                Search Results (Stopwords)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-search-norm-sqrt-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-search-norm-sqrt" type="button" role="tab">
+                                <i class="bi bi-search"></i>
+                                Search Results (Norm: SQRT)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="method-search-norm-log-tab" data-bs-toggle="pill" 
+                                    data-bs-target="#method-search-norm-log" type="button" role="tab">
+                                <i class="bi bi-search"></i>
+                                Search Results (Norm: LOG)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- Method 1: All Corpus (No Stopwords) -->
+                        <div class="tab-pane fade show active" id="method-all" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-all"></ol>
+                        </div>
+
+                        <!-- Method 2: All Corpus (With Stopwords) -->
+                        <div class="tab-pane fade" id="method-all-stop" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-all-stop"></ol>
+                        </div>
+
+                        <!-- Method 3: All Corpus (Length Normalization: SQRT) -->
+                        <div class="tab-pane fade" id="method-all-norm-sqrt" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-all-norm-sqrt"></ol>
+                        </div>
+
+                        <!-- Method 4: All Corpus (Length Normalization: LOG) -->
+                        <div class="tab-pane fade" id="method-all-norm-log" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-all-norm-log"></ol>
+                        </div>
+
+                        <!-- Method 5: Search Results (No Stopwords) -->
+                        <div class="tab-pane fade" id="method-search" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-search"></ol>
+                        </div>
+
+                        <!-- Method 6: Search Results (With Stopwords) -->
+                        <div class="tab-pane fade" id="method-search-stop" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-search-stop"></ol>
+                        </div>
+
+                        <!-- Method 7: Search Results (Length Normalization: SQRT) -->
+                        <div class="tab-pane fade" id="method-search-norm-sqrt" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-search-norm-sqrt"></ol>
+                        </div>
+
+                        <!-- Method 8: Search Results (Length Normalization: LOG) -->
+                        <div class="tab-pane fade" id="method-search-norm-log" role="tabpanel">
+                            <ol class="sentence-list" id="sentences-search-norm-log"></ol>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mb-4"> 
+    <button id="backToTopBtn" type="button" class="btn btn-primary rounded-circle shadow-lg">
+    <i class="bi bi-arrow-up"></i>
+    </button>
+</div>
+
+<script src="{% static 'search_engine/js/back_to_top.js' %}"></script>
+<script src="{% static 'search_engine/js/tfidf.js' %}"></script>
+
+{% endblock %}
